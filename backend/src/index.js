@@ -153,33 +153,49 @@ app.patch("/patients/:id", async (req, res) => {
   });
 });
 
-//PAGINATION 
-app.get('/patients', async (req, res) => {
-  const page = parseInt(req.query.page) || 1; 
-  const limit = parseInt(req.query.limit) || 2; 
-  const offset = (page - 1) * limit; 
+//SEARCH AND PAGINATION
+
+app.get("/pagination", async (req, res) => {
+  const { page = 1, limit = 10, search = "" } = req.query;
 
   try {
     const patients = await prisma.patient.findMany({
-      skip: offset,
-      take: limit,
+      where: {
+        OR: [
+          { fullName: { contains: search } },
+          { phoneNumber: { contains: search } },
+          { address: { contains: search } },
+          { diagnosis: { contains: search } },
+          { doctorName: { contains: search } },
+          { poliClinic: { contains: search } },
+        ],
+      },
+      skip: (page - 1) * limit,
+      take: parseInt(limit),
     });
 
-    const totalPatients = await prisma.user.count();
+    const totalPatients = await prisma.patient.count({
+      where: {
+        OR: [
+          { fullName: { contains: search } },
+          { phoneNumber: { contains: search } },
+          { address: { contains: search } },
+          { diagnosis: { contains: search } },
+          { doctorName: { contains: search } },
+          { poliClinic: { contains: search } },
+        ],
+      },
+    });
 
     res.json({
-      total: totalPatients,
-      page,
-      limit,
       patients,
+      totalPages: Math.ceil(totalPatients / limit),
+      currentPage: page,
     });
-  } catch (error) {
-    res.status(500).json({ error: 'Something went wrong' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
-
-//SEARCH BAR 
-
 
 app.listen(PORT, () => {
   console.log("Express API running in port: " + PORT);
