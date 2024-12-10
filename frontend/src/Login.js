@@ -13,7 +13,7 @@ const Login = () => {
     setSuccess("");
 
     try {
-      const response = await axios.post("http://localhost:2000/register", {
+      const response = await axios.post("http://localhost:2000/login", {
         email,
         password,
       });

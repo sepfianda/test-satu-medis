@@ -5,11 +5,13 @@ import PatientList from "./components/PatientList";
 import AddPatients from "./components/AddPatients";
 import EditPatient from "./components/EditPatient";
 import PaginationPatients from "./components/PaginationPatients";
+import Page from "./Page";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Page/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/register" element={<Register/>}/>
         <Route path="/patientList" element={<PatientList/>}/>
